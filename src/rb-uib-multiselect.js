@@ -9,38 +9,78 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       inputOptions: '=',
       outputOptions: '=',
       maxLabels: '@',
+      buttonClass: '@',
       menuClass: '@',
-      onChange: '&'
+      selectText: '@',
+      selectAllText: '@',
+      itemLabel: '&'
     },
     templateUrl: 'rb-uib-multiselect.html',
     link: function (scope, element, attrs) {
-      // set options
-      scope.options = []
-      angular.forEach(scope.inputOptions, function (o) {
-        scope.options.push({ id: o.id, label: o.label, selected: false, source: o })
-      })
+      // reset input, output
+      scope.reset = function () {
+        scope.options = []
+        scope.outputOptions = []
+        scope.selectAll = false
+      }
+      scope.reset()
 
-      // set max labels
-      if (scope.maxLabels === undefined) {
-        scope.maxLabels = scope.options.length
+      // set defaults
+      scope.setDefaults = function () {
+        if (scope.maxLabels === undefined) {
+          scope.maxLabels = scope.options.length
+        }
+        scope.label = scope.itemLabel()
+        if (scope.label === undefined) {
+          scope.label = function (item) {
+            return ' ' + item.label
+          }
+        }
+        if (scope.selectText === undefined) {
+          scope.selectText = 'Select'
+        }
+        if (scope.selectAllText === undefined) {
+          scope.selectAllText = ' Select All'
+        }
+      }
+      scope.setDefaults()
+
+      // prepare input options from input model
+      scope.prepareOptions = function () {
+        scope.reset()
+        angular.forEach(scope.inputOptions, function (o) {
+          scope.options.push({ id: o.id, label: scope.label(o), selected: o.selected || false, source: o })
+        })
+        scope.updateOutput()
       }
 
-      // on item click
+      // watch for input changes
+      scope.$watch('inputOptions', function (newInput) {
+        if (newInput) {
+          scope.prepareOptions()
+        }
+      })
+
+      // on menu item click
       scope.onItemClick = function (o, $event) {
         $event.preventDefault()
         o.selected = !o.selected
         scope.updateOutput()
       }
 
-      // on select all checkbox change
-      scope.selectAll = false
+      // on menu item checkbox change
+      scope.onItemSelectionChange = function () {
+        scope.updateOutput()
+      }
 
+      // on select-all click
       scope.onSelectAllClick = function ($event) {
         $event.preventDefault()
         scope.selectAll = !scope.selectAll
         scope.onSelectAllChange()
       }
 
+      // on select-all checkbox change
       scope.onSelectAllChange = function () {
         angular.forEach(scope.options, function (o) {
           o.selected = scope.selectAll
@@ -48,10 +88,7 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
         scope.updateOutput()
       }
 
-      scope.onCheckboxChange = function () {
-        scope.updateOutput()
-      }
-
+      // updates output model
       scope.updateOutput = function () {
         var output = []
         angular.forEach(scope.options, function (o) {
@@ -62,28 +99,24 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
         scope.outputOptions = output
       }
 
-      // display label
-      scope.displayLabel = function () {
+      // button label
+      // TODO customize label
+      scope.buttonLabel = function () {
         var label = []
         angular.forEach(scope.outputOptions, function (o) {
           label.push(o.label)
         })
-
         if (label.length === 0) {
-          return 'Select'
+          return scope.selectText
         }
-
         var i = 0
         var labelFinal = []
         for (i = 0; i < scope.maxLabels && i < label.length; i++) {
           labelFinal.push(label[i])
         }
-
         if (scope.maxLabels < label.length) {
-          // labelFinal.push('...')
           return '(' + label.length + ') Selected'
         }
-
         return labelFinal.join(', ')
       }
     }
@@ -92,22 +125,22 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
 
 angular.module('rb-uib-multiselect').run(['$templateCache', function ($templateCache) {
   var template = '' +
-  '<div class="btn-group" uib-dropdown auto-close="outsideClick" ng-class="dropdownClass">' +
-    '<button type="button" class="btn btn-primary" uib-dropdown-toggle>' +
-      '{{displayLabel()}} <span class="caret"></span>' +
+  '<div class="btn-group" uib-dropdown auto-close="outsideClick">' +
+    '<button type="button" class="btn" uib-dropdown-toggle ng-class="[buttonClass]">' +
+      '{{ buttonLabel() }}' +
     '</button>' +
     '<ul class="dropdown-menu" uib-dropdown-menu role="menu" ng-class="[menuClass]">' +
-      '<li role="menuitem">' +
+      '<li role="menuitem" ng-if="options.length > 0">' +
         '<a href="#" ng-click="onSelectAllClick($event)">' +
           '<input type="checkbox" ng-model="selectAll" ng-change="onSelectAllChange()" ng-click="$event.stopPropagation()">' +
-          '&nbsp;Select All' +
+          '{{ selectAllText }}' +
         '</a>' +
       '</li>' +
-      '<li class="divider"></li>' +
+      '<li class="divider" ng-if="options.length > 0"></li>' +
       '<li role="menuitem" ng-repeat="o in options">' +
           '<a href="#" ng-click="onItemClick(o, $event)">' +
-            '<input type="checkbox" ng-model="o.selected" ng-change="onCheckboxChange()" ng-click="$event.stopPropagation()">' +
-            '&nbsp;{{o.label}}' +
+            '<input type="checkbox" ng-model="o.selected" ng-change="onItemSelectionChange()" ng-click="$event.stopPropagation()">' +
+            '{{ o.label }}' +
           '</a>' +
       '</li>' +
     '</ul>' +
