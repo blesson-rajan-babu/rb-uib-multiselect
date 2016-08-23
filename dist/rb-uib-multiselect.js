@@ -19,6 +19,7 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       menuClass: '@',
       selectText: '@',
       selectAllText: '@',
+      clearAllText: '@',
       itemLabel: '&'
     },
     templateUrl: 'rb-uib-multiselect.html',
@@ -47,6 +48,9 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
         }
         if (scope.selectAllText === undefined) {
           scope.selectAllText = ' Select All'
+        }
+        if (scope.clearAllText === undefined) {
+          scope.clearAllText = ' Clear All'
         }
       }
       scope.setDefaults()
@@ -83,11 +87,6 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       scope.onSelectAllClick = function ($event) {
         $event.preventDefault()
         scope.selectAll = !scope.selectAll
-        scope.onSelectAllChange()
-      }
-
-      // on select-all checkbox change
-      scope.onSelectAllChange = function () {
         angular.forEach(scope.options, function (o) {
           o.selected = scope.selectAll
         })
@@ -97,11 +96,15 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       // updates output model
       scope.updateOutput = function () {
         var output = []
+        var allSelected = true
         angular.forEach(scope.options, function (o) {
           if (o.selected === true) {
             output.push(o.source)
+          } else {
+            allSelected = false
           }
         })
+        scope.selectAll = allSelected
         scope.outputOptions = output
       }
 
@@ -110,7 +113,7 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       scope.buttonLabel = function () {
         var label = []
         angular.forEach(scope.outputOptions, function (o) {
-          label.push(o.label)
+          label.push(scope.label(o))
         })
         if (label.length === 0) {
           return scope.selectText
@@ -138,8 +141,7 @@ angular.module('rb-uib-multiselect').run(['$templateCache', function ($templateC
     '<ul class="dropdown-menu" uib-dropdown-menu role="menu" ng-class="[menuClass]">' +
       '<li role="menuitem" ng-if="options.length > 0">' +
         '<a href="#" ng-click="onSelectAllClick($event)">' +
-          '<input type="checkbox" ng-model="selectAll" ng-change="onSelectAllChange()" ng-click="$event.stopPropagation()">' +
-          '{{ selectAllText }}' +
+          '{{ selectAll ? clearAllText : selectAllText }}' +
         '</a>' +
       '</li>' +
       '<li class="divider" ng-if="options.length > 0"></li>' +
