@@ -14,7 +14,8 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       selectText: '@',
       selectAllText: '@',
       clearAllText: '@',
-      itemLabel: '&'
+      itemLabel: '&',
+      buttonLabel: '&'
     },
     templateUrl: 'rb-uib-multiselect.html',
     link: function (scope, element, attrs) {
@@ -31,10 +32,26 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
         if (scope.maxLabels === undefined) {
           scope.maxLabels = scope.options.length
         }
-        scope.label = scope.itemLabel()
-        if (scope.label === undefined) {
-          scope.label = function (item) {
+        scope._itemLabel = scope.itemLabel()
+        if (scope._itemLabel === undefined) {
+          scope._itemLabel = function (item) {
             return ' ' + item.label
+          }
+        }
+        scope._buttonLabel = scope.buttonLabel()
+        if (scope._buttonLabel === undefined) {
+          scope._buttonLabel = function () {
+            if (scope.outputOptions.length === 0) {
+              return scope.selectText
+            }
+            if (scope.maxLabels < scope.outputOptions.length) {
+              return '(' + scope.outputOptions.length + ') Selected'
+            }
+            var labels = []
+            angular.forEach(scope.outputOptions, function (o) {
+              labels.push(scope._itemLabel(o))
+            })
+            return labels.join(', ')
           }
         }
         if (scope.selectText === undefined) {
@@ -49,11 +66,11 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       }
       scope.setDefaults()
 
-      // prepare input options from input model
+      // prepares input options from input model
       scope.prepareOptions = function () {
         scope.reset()
         angular.forEach(scope.inputOptions, function (o) {
-          scope.options.push({ id: o.id, label: scope.label(o), selected: o.selected || false, source: o })
+          scope.options.push({ id: o.id, label: scope._itemLabel(o), selected: o.selected || false, source: o })
         })
         scope.updateOutput()
       }
@@ -101,27 +118,6 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
         scope.selectAll = allSelected
         scope.outputOptions = output
       }
-
-      // button label
-      // TODO customize label
-      scope.buttonLabel = function () {
-        var label = []
-        angular.forEach(scope.outputOptions, function (o) {
-          label.push(scope.label(o))
-        })
-        if (label.length === 0) {
-          return scope.selectText
-        }
-        var i = 0
-        var labelFinal = []
-        for (i = 0; i < scope.maxLabels && i < label.length; i++) {
-          labelFinal.push(label[i])
-        }
-        if (scope.maxLabels < label.length) {
-          return '(' + label.length + ') Selected'
-        }
-        return labelFinal.join(', ')
-      }
     }
   }
 })
@@ -130,7 +126,7 @@ angular.module('rb-uib-multiselect').run(['$templateCache', function ($templateC
   var template = '' +
   '<div class="btn-group btn-block" uib-dropdown auto-close="outsideClick">' +
     '<button type="button" class="btn btn-block" uib-dropdown-toggle ng-class="[buttonClass]">' +
-      '{{ buttonLabel() }}' +
+      '{{ _buttonLabel() }}' +
     '</button>' +
     '<ul class="dropdown-menu" style="width: 100%;" uib-dropdown-menu role="menu" ng-class="[menuClass]">' +
       '<li role="menuitem" ng-if="options.length > 0">' +
