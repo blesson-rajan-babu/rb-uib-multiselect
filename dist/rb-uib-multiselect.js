@@ -1,4 +1,4 @@
-/*!
+/**
  * rb-uib-multiselect
  * @version v0.0.1
  * @link https://github.com/blessonrajan/rb-uib-multiselect

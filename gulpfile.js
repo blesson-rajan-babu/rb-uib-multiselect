@@ -17,7 +17,7 @@ gulp.task('build', function () {
 
   var pkg = require('./package.json')
   var banner = [
-    '/*!',
+    '/**',
     ' * <%= pkg.name %>',
     ' * @version v<%= pkg.version %>',
     ' * @link <%= pkg.homepage %>',
