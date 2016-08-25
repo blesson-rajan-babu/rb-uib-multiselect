@@ -128,11 +128,11 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
 
 angular.module('rb-uib-multiselect').run(['$templateCache', function ($templateCache) {
   var template = '' +
-  '<div class="btn-group" uib-dropdown auto-close="outsideClick">' +
-    '<button type="button" class="btn" uib-dropdown-toggle ng-class="[buttonClass]">' +
+  '<div class="btn-group btn-block" uib-dropdown auto-close="outsideClick">' +
+    '<button type="button" class="btn btn-block" uib-dropdown-toggle ng-class="[buttonClass]">' +
       '{{ buttonLabel() }}' +
     '</button>' +
-    '<ul class="dropdown-menu" uib-dropdown-menu role="menu" ng-class="[menuClass]">' +
+    '<ul class="dropdown-menu" style="width: 100%;" uib-dropdown-menu role="menu" ng-class="[menuClass]">' +
       '<li role="menuitem" ng-if="options.length > 0">' +
         '<a href="#" ng-click="onSelectAllClick($event)">' +
           '{{ selectAll ? clearAllText : selectAllText }}' +
