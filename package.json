@@ -1,6 +1,6 @@
 {
   "name": "rb-uib-multiselect",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A simple multiselect dropdown directive for AngularJS + UI Bootstrap",
   "author": "Blesson Rajan <blessonrajan@gmail.com> (https://github.com/blessonrajan)",
   "private": true,
