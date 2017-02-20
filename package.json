@@ -1,0 +1,39 @@
+{
+  "name": "rb-uib-multiselect",
+  "version": "1.0.0",
+  "description": "A simple multiselect dropdown directive for AngularJS + UI Bootstrap",
+  "author": "Blesson Rajan Babu <blessonrajan@users.noreply.github.com> (https://github.com/blessonrajan)",
+  "private": true,
+  "main": "dist/rb-uib-multiselect.min.js",
+  "homepage": "https://github.com/blessonrajan/rb-uib-multiselect",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blessonrajan/rb-uib-multiselect.git"
+  },
+  "bugs": {
+    "url": "https://github.com/blessonrajan/rb-uib-multiselect/issues"
+  },
+  "dependencies": {
+    "angular-ui-bootstrap": "2.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.3.1",
+    "eslint-config-standard": "^6.0.0-beta.3",
+    "eslint-plugin-promise": "^2.0.1",
+    "eslint-plugin-standard": "^2.0.0",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
+    "gulp-header": "^1.8.8",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^2.0.0",
+    "gulp-watch": "^4.3.9",
+    "pump": "^1.0.1"
+  },
+  "keywords": [
+    "multiselect",
+    "dropdown",
+    "angular",
+    "ui-bootstrap"
+  ],
+  "license": "MIT"
+}
