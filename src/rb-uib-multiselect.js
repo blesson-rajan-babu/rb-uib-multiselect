@@ -30,7 +30,7 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       // set defaults
       scope.setDefaults = function () {
         if (scope.maxLabels === undefined) {
-          scope.maxLabels = scope.options.length
+          scope.maxLabels = 0
         }
         scope._itemLabel = scope.itemLabel()
         if (scope._itemLabel === undefined) {
@@ -44,14 +44,14 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
             if (scope.outputOptions.length === 0) {
               return scope.selectText
             }
-            if (scope.maxLabels < scope.outputOptions.length) {
+            if (scope.maxLabels > 0 && scope.maxLabels < scope.outputOptions.length) {
               return '(' + scope.outputOptions.length + ') Selected'
             }
             var labels = []
             angular.forEach(scope.outputOptions, function (o) {
               labels.push(scope._itemLabel(o))
             })
-            return labels.join(', ')
+            return labels.join(',')
           }
         }
         if (scope.selectText === undefined) {
