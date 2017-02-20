@@ -143,7 +143,7 @@ angular.module('rb-uib-multiselect').run(['$templateCache', function ($templateC
     '<li class="divider" ng-if="_showSelectAll && options.length > 0"></li>' +
     '<li role="menuitem" ng-repeat="o in options">' +
     '<a href="#" ng-click="onItemClick(o, $event)">' +
-    '<input type="checkbox" ng-model="o.selected" ng-change="onItemSelectionChange()" ng-click="$event.stopPropagation()">' +
+    '<input type="checkbox" ng-model="o.selected" ng-change="onItemSelectionChange()" ng-click="$event.stopPropagation()" tabindex="-1">' +
     '{{ o.label }}' +
     '</a>' +
     '</li>' +
