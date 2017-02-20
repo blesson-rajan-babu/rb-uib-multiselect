@@ -1,6 +1,6 @@
 /**
  * rb-uib-multiselect
- * @version v1.0.0
+ * @version v1.1.0
  * @link https://github.com/blessonrajan/rb-uib-multiselect
  * @license MIT
  */
@@ -20,6 +20,7 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       selectText: '@',
       selectAllText: '@',
       clearAllText: '@',
+      showSelectAll: '@',
       itemLabel: '&',
       buttonLabel: '&'
     },
@@ -36,7 +37,7 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
       // set defaults
       scope.setDefaults = function () {
         if (scope.maxLabels === undefined) {
-          scope.maxLabels = scope.options.length
+          scope.maxLabels = 0
         }
         scope._itemLabel = scope.itemLabel()
         if (scope._itemLabel === undefined) {
@@ -50,14 +51,14 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
             if (scope.outputOptions.length === 0) {
               return scope.selectText
             }
-            if (scope.maxLabels < scope.outputOptions.length) {
+            if (scope.maxLabels > 0 && scope.maxLabels < scope.outputOptions.length) {
               return '(' + scope.outputOptions.length + ') Selected'
             }
             var labels = []
             angular.forEach(scope.outputOptions, function (o) {
               labels.push(scope._itemLabel(o))
             })
-            return labels.join(', ')
+            return labels.join(',')
           }
         }
         if (scope.selectText === undefined) {
@@ -68,6 +69,11 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
         }
         if (scope.clearAllText === undefined) {
           scope.clearAllText = ' Clear All'
+        }
+        if (scope.showSelectAll === 'false') {
+          scope._showSelectAll = false
+        } else {
+          scope._showSelectAll = true
         }
       }
       scope.setDefaults()
@@ -130,25 +136,25 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
 
 angular.module('rb-uib-multiselect').run(['$templateCache', function ($templateCache) {
   var template = '' +
-  '<div class="btn-group btn-block" uib-dropdown auto-close="outsideClick">' +
+    '<div class="btn-group btn-block" uib-dropdown auto-close="outsideClick">' +
     '<button type="button" class="btn btn-block" uib-dropdown-toggle ng-class="[buttonClass]">' +
-      '{{ _buttonLabel() }}' +
+    '{{ _buttonLabel() }}' +
     '</button>' +
     '<ul class="dropdown-menu" style="width: 100%;" uib-dropdown-menu role="menu" ng-class="[menuClass]">' +
-      '<li role="menuitem" ng-if="options.length > 0">' +
-        '<a href="#" ng-click="onSelectAllClick($event)">' +
-          '{{ selectAll ? clearAllText : selectAllText }}' +
-        '</a>' +
-      '</li>' +
-      '<li class="divider" ng-if="options.length > 0"></li>' +
-      '<li role="menuitem" ng-repeat="o in options">' +
-          '<a href="#" ng-click="onItemClick(o, $event)">' +
-            '<input type="checkbox" ng-model="o.selected" ng-change="onItemSelectionChange()" ng-click="$event.stopPropagation()">' +
-            '{{ o.label }}' +
-          '</a>' +
-      '</li>' +
+    '<li role="menuitem" ng-if="_showSelectAll && options.length > 0">' +
+    '<a href="#" ng-click="onSelectAllClick($event)">' +
+    '{{ selectAll ? clearAllText : selectAllText }}' +
+    '</a>' +
+    '</li>' +
+    '<li class="divider" ng-if="_showSelectAll && options.length > 0"></li>' +
+    '<li role="menuitem" ng-repeat="o in options">' +
+    '<a href="#" ng-click="onItemClick(o, $event)">' +
+    '<input type="checkbox" ng-model="o.selected" ng-change="onItemSelectionChange()" ng-click="$event.stopPropagation()" tabindex="-1">' +
+    '{{ o.label }}' +
+    '</a>' +
+    '</li>' +
     '</ul>' +
-  '</div>'
+    '</div>'
 
   $templateCache.put('rb-uib-multiselect.html', template)
 }])
