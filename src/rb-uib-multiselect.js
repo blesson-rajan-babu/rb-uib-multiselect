@@ -88,6 +88,57 @@ angular.module('rb-uib-multiselect').directive('rbUibMultiselect', function () {
         }
       })
 
+      scope.focusOption = function (opts, idx, down) {
+        if (down) {
+          idx++
+        } else {
+          idx--
+        }
+        if (scope._showSelectAll && idx === 1) {
+          if (down) {
+            idx++
+          } else {
+            idx--
+          }
+        }
+        if (idx >= opts.length) {
+          idx = 0
+        } else if (idx < 0) {
+          idx = opts.length - 1
+        }
+        if (opts[idx].children[0]) {
+          opts[idx].children[0].focus()
+        }
+      }
+
+      scope.keyDownListener = function (event) {
+        var key = event.keyCode ? event.keyCode : event.which
+
+        var idx = -1
+        if (key === 40 || key === 38 || key === 32) {
+          var opts = this.children[0].children[1].children
+          var i = 0
+          for (i = 0; i < opts.length; i++) {
+            if (opts[i].children[0] === document.activeElement) {
+              idx = i
+            }
+          }
+        }
+
+        if (key === 40) { // keydown
+          scope.focusOption(opts, idx, true)
+        } else if (key === 38) { // keyup
+          scope.focusOption(opts, idx, false)
+        } else if (key === 32) { // space
+          opts[idx].children[0].click()
+        }
+      }
+
+      scope.setEventHandlers = function () {
+        angular.element(element).on('keydown', scope.keyDownListener)
+      }
+      scope.setEventHandlers()
+
       // on menu item click
       scope.onItemClick = function (o, $event) {
         $event.preventDefault()
